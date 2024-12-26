@@ -22,7 +22,7 @@ interface DashboardHeaderProps {
 }
 
 const DashboardHeader = ({
-  gymName = "FitCore Gym",
+  gymName = "Trung Hieu Gym",
   adminUser = {
     name: "Admin User",
     email: "admin@fitcore.com",

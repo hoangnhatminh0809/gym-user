@@ -30,11 +30,11 @@ const defaultStats = [
     description: "Revenue this month",
   },
   {
-    title: "Class Bookings",
+    title: "New Member",
     value: "156",
     trend: -2.5,
     icon: <Calendar className="h-4 w-4" />,
-    description: "Active class reservations",
+    description: "New member join our gym",
   },
   {
     title: "Equipment Usage",

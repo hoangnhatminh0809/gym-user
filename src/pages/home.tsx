@@ -1,7 +1,7 @@
 import React from "react";
-import DashboardHeader from "./dashboard/DashboardHeader";
-import Sidebar from "./dashboard/Sidebar";
-import DashboardGrid from "./dashboard/overview/DashboardGrid";
+import DashboardHeader from "../components/dashboard/DashboardHeader";
+import Sidebar from "../components/dashboard/Sidebar";
+import DashboardGrid from "../components/dashboard/overview/DashboardGrid";
 
 interface HomeProps {
   gymName?: string;
@@ -13,7 +13,7 @@ interface HomeProps {
 }
 
 const Home = ({
-  gymName = "FitCore Gym",
+  gymName = "Trung Hieu Gym",
   adminUser = {
     name: "Admin User",
     email: "admin@fitcore.com",

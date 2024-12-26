@@ -32,20 +32,20 @@ const defaultNavItems: NavItem[] = [
   },
   {
     icon: <Dumbbell className="h-5 w-5" />,
-    label: "Training",
-    href: "/training",
+    label: "Equipment",
+    href: "/equipments",
     isActive: false,
   },
   {
     icon: <Box className="h-5 w-5" />,
-    label: "Resources",
-    href: "/resources",
+    label: "Room",
+    href: "/rooms",
     isActive: false,
   },
   {
     icon: <Calendar className="h-5 w-5" />,
-    label: "Schedule",
-    href: "/schedule",
+    label: "Training Package",
+    href: "/training-packages",
     isActive: false,
   },
   {
@@ -61,11 +61,13 @@ const Sidebar = ({ items = defaultNavItems, className }: SidebarProps) => {
     <div
       className={cn("w-[280px] h-full bg-white border-r px-4 py-6", className)}
     >
-      <p className="flex flex-col h-full">
+      <div className="flex flex-col h-full">
         {/* Logo */}
         <div className="flex items-center gap-2 px-2 mb-8">
-          <Dumbbell className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold">Gym Manager</span>
+          <a href="/" className="flex items-center gap-2">
+            <Dumbbell className="h-8 w-8 text-primary" />
+            <span className="text-xl font-bold">Gym Manager</span>
+          </a>
         </div>
 
         {/* Navigation Items */}
@@ -102,7 +104,7 @@ const Sidebar = ({ items = defaultNavItems, className }: SidebarProps) => {
             <span>Logout</span>
           </Button>
         </div>
-      </p>
+      </div>
     </div>
   );
 };

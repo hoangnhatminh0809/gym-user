@@ -20,7 +20,7 @@ const StatsCard = ({
   const isPositiveTrend = trend >= 0;
 
   return (
-    <Card className="w-[384px] h-[180px] bg-white shadow-sm hover:shadow-md transition-shadow">
+    <Card className="w-[250px] h-[180px] bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
