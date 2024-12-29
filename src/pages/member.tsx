@@ -1,6 +1,16 @@
 import Sidebar from "../components/dashboard/Sidebar";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 
+interface Member {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  membershipType: string;
+  status: "active" | "inactive";
+  joinDate: string;
+}
+
 const Member = () => {
   return (
     <div className="min-h-screen bg-background flex">

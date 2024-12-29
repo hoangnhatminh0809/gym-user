@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Bell, Settings, LogOut } from "lucide-react";
@@ -10,6 +10,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import { AuthContext } from "@/services/AuthContext";
+import { useNavigate } from "react-router";
 
 interface DashboardHeaderProps {
   gymName?: string;
@@ -30,6 +33,15 @@ const DashboardHeader = ({
   },
   notificationCount = 3,
 }: DashboardHeaderProps) => {
+
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <header className="h-16 w-full border-b bg-white px-6 flex items-center justify-between">
       <div className="flex items-center space-x-4">
@@ -71,7 +83,7 @@ const DashboardHeader = ({
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-600">
+            <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { cn } from "@/lib/utils";
 import {
   Users,
@@ -10,6 +10,8 @@ import {
   LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AuthContext } from "@/services/AuthContext";
+import { useNavigate } from "react-router";
 
 interface NavItem {
   icon: React.ReactNode;
@@ -57,6 +59,14 @@ const defaultNavItems: NavItem[] = [
 ];
 
 const Sidebar = ({ items = defaultNavItems, className }: SidebarProps) => {
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <div
       className={cn("w-[280px] h-full bg-white border-r px-4 py-6", className)}
@@ -78,7 +88,7 @@ const Sidebar = ({ items = defaultNavItems, className }: SidebarProps) => {
               variant={item.isActive ? "secondary" : "ghost"}
               className={cn(
                 "w-full justify-start gap-3 px-3 py-6",
-                item.isActive && "bg-secondary",
+                item.isActive && "bg-secondary"
               )}
               asChild
             >
@@ -99,6 +109,7 @@ const Sidebar = ({ items = defaultNavItems, className }: SidebarProps) => {
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 text-red-500 hover:text-red-600 hover:bg-red-50"
+            onClick={handleLogout}
           >
             <LogOut className="h-5 w-5" />
             <span>Logout</span>
