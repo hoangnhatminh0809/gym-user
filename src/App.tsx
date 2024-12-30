@@ -9,20 +9,63 @@ import TrainingPackage from "./pages/training-package";
 import Analystic from "./pages/analystic";
 import Login from "./pages/login";
 import { AuthProvider } from "./services/AuthContext";
+import RequireAuth from "./services/RequireAuth";
 
 function App() {
   return (
     <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/members" element={<Member />} />
-          <Route path="/equipments" element={<Equipment />} />
-          <Route path="/rooms" element={<Room />} />
-          <Route path="/training-packages" element={<TrainingPackage />} />
-          <Route path="/analystics" element={<Analystic />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <Home />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/members"
+          element={
+            <RequireAuth>
+              <Member />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/equipments"
+          element={
+            <RequireAuth>
+              <Equipment />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/rooms"
+          element={
+            <RequireAuth>
+              <Room />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/training-packages"
+          element={
+            <RequireAuth>
+              <TrainingPackage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/analystics"
+          element={
+            <RequireAuth>
+              <Analystic />
+            </RequireAuth>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </AuthProvider>
   );
 }

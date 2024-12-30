@@ -1,5 +1,19 @@
 import axios from "axios";
 
+interface User {
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+    email: string;
+}
+
+interface TokenResponse {
+    access_token: string;
+    refresh_token: string;
+    user: User;
+}
+
 // Axios instance
 const api = axios.create({
     baseURL: "https://gym-system-taupe.vercel.app",
@@ -8,14 +22,48 @@ const api = axios.create({
     },
 });
 
+const getAccessToken = (): string | null => localStorage.getItem("access_token");
+const getRefreshToken = (): string | null => localStorage.getItem("refresh_token");
 
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(
+    (config) => {
+        const token = getAccessToken();
+        if (token && config.headers) {
+            config.headers["Authorization"] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            try {
+                const refreshToken = getRefreshToken();
+                if (refreshToken) {
+                    const response = await api.post("/user/api/refresh-token/", {
+                        refresh_token: refreshToken
+                    });
+                    const { access_token } = response.data;
+                    localStorage.setItem("access_token", access_token);
+                    originalRequest.headers["Authorization"] = `Bearer ${access_token}`;
+                    return api(originalRequest);
+                }
+            } catch (error) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("refresh_token");
+                localStorage.removeItem("token_expiry");
+                window.location.href = "/login";
+                return Promise.reject(error);
+            }
+        }
+        return Promise.reject(error);
     }
-    return config;
-});
+);
 
 export const register = (data: {
     first_name: string;
@@ -31,7 +79,7 @@ export const login = (data: { username: string; password: string }) =>
 export const refreshToken = (refreshToken: string) =>
     api.post("/user/api/refresh-token/", { refresh_token: refreshToken });
 
-export const logout = () => api.get("/logout/");
+export const logout = () => api.get("/user/api/logout/");
 
 export const createCheckoutSession = (amount: number) =>
     api.post("/user/api/create-checkout-session/", { amount });
