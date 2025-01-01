@@ -4,7 +4,9 @@ import Sidebar from "../components/dashboard/Sidebar"
 import DashboardHeader from "../components/dashboard/DashboardHeader"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/card"
 import { Input } from "../components/ui/input"
+import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from "../components/ui/select"
 import { Button } from "../components/ui/button"
+import { Label } from "../components/ui/label"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../components/ui/table"
 import {
   AlertDialog,
@@ -18,7 +20,7 @@ import {
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog"
 
-interface Equipment {
+export interface Equipment {
   id: number;
   name: string;
   room: number;
@@ -30,10 +32,28 @@ interface Equipment {
   status: string;
 }
 
+export interface Room {
+  id: number;
+  name: string;
+}
+
 const Equipment = () => {
   const [equipments, setEquipments] = useState<Equipment[]>([])
+  const [rooms, setRooms] = useState<Room[]>([])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [newEquipment, setNewEquipment] = useState<Partial<Equipment>>({
+    name: '',
+    room: 0,
+    quantity: 0,
+    import_date: '',
+    warranty_date: '',
+    origin: '',
+    last_check: '',
+    status: ''
+  });
+  const [editEquipment, setEditEquipment] = useState<Partial<Equipment>>({
+    id: 0,
     name: '',
     room: 0,
     quantity: 0,
@@ -45,9 +65,9 @@ const Equipment = () => {
   });
   const [equipmentToDelete, setEquipmentToDelete] = useState<number | null>(null)
 
-
   useEffect(() => {
     fetchEquipments().then(setEquipments)
+    fetchRooms().then(setRooms)
   }, [])
 
   const fetchEquipments = async () => {
@@ -55,28 +75,73 @@ const Equipment = () => {
     return response.data
   }
 
-  const handleAdd = async () => {
-    try {
-      const response = await api.post('/room/api/equipments/', newEquipment)
-      setEquipments([...equipments, response.data])
-      setNewEquipment({})
-      setIsAddDialogOpen(false)
-    } catch (error) {
-      console.error('Failed to add equipment:', error)
-    }
+  const fetchRooms = async () => {
+    const response = await api.get<Room[]>(`/room/api/rooms/`)
+    return response.data
   }
 
+  const handleAdd = async () => {
+    try {
+      const response = await api.post<Equipment>(`/room/api/equipments/`, newEquipment);
+      setEquipments([...equipments, response.data]); // Add the new equipment to the list
+      setNewEquipment({ // Reset the form
+        name: "",
+        room: 0,
+        quantity: 0,
+        import_date: "",
+        warranty_date: "",
+        origin: "",
+        last_check: "",
+        status: "",
+      });
+      setIsAddDialogOpen(false); // Close the dialog
+    } catch (error) {
+      console.error("Failed to add equipment:", error);
+    }
+  };
+
+  const handleEditClick = (equipment: Equipment) => {
+    setEditEquipment(equipment);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEdit = async () => {
+    try {
+      const response = await api.put<Equipment>(`/room/api/equipments/${editEquipment.id}/`, editEquipment);
+      setEquipments(equipments.map(e => e.id === editEquipment.id ? response.data : e)); // Update the equipment in the list
+      setEditEquipment({ // Reset the form
+        id: 0,
+        name: "",
+        room: 0,
+        quantity: 0,
+        import_date: "",
+        warranty_date: "",
+        origin: "",
+        last_check: "",
+        status: "",
+      });
+      setIsEditDialogOpen(false); // Close the dialog
+    } catch (error) {
+      console.error("Failed to edit equipment:", error);
+    }
+  };
+
   const handleDeleteClick = (id: number) => {
-    setEquipmentToDelete(id)
-  }
+    setEquipmentToDelete(id);
+  };
 
   const handleConfirmDelete = async () => {
     if (equipmentToDelete) {
-      await api.delete(`/room/api/equipments/${equipmentToDelete}/`)
-      setEquipments(equipments.filter(item => item.id !== equipmentToDelete))
-      setEquipmentToDelete(null)
+      await api.delete(`/room/api/equipments/${equipmentToDelete}/`);
+      setEquipments(equipments.filter((item) => item.id !== equipmentToDelete));
+      setEquipmentToDelete(null);
     }
-  }
+  };
+
+  const getRoomName = (roomId: number) => {
+    const room = rooms.find(room => room.id === roomId)
+    return room ? room.name : 'Unknown'
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -101,46 +166,61 @@ const Equipment = () => {
                     </AlertDialogHeader>
                     <div className="grid gap-4 py-4">
                       <div className="grid grid-cols-2 items-center gap-4">
+                        <Label>Name</Label>
                         <Input
                           placeholder="Name"
                           value={newEquipment.name || ''}
                           onChange={(e) => setNewEquipment({ ...newEquipment, name: e.target.value })}
                         />
-                        <Input
-                          type="number"
-                          placeholder="Room"
-                          value={newEquipment.room || ''}
-                          onChange={(e) => setNewEquipment({ ...newEquipment, room: parseInt(e.target.value) })}
-                        />
+                        <Label>Room</Label>
+                        <Select
+                          value={newEquipment.room.toString() || ''}
+                          onValueChange={(value) => setNewEquipment({ ...newEquipment, room: parseInt(value) })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Room" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {rooms.map(room => (
+                              <SelectItem key={room.id} value={room.id.toString()}>{room.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Label>Quantity</Label>
                         <Input
                           type="number"
                           placeholder="Quantity"
                           value={newEquipment.quantity || ''}
                           onChange={(e) => setNewEquipment({ ...newEquipment, quantity: parseInt(e.target.value) })}
                         />
+                        <Label>Import Date</Label>
                         <Input
                           type="date"
                           placeholder="Import Date"
                           value={newEquipment.import_date || ''}
                           onChange={(e) => setNewEquipment({ ...newEquipment, import_date: e.target.value })}
                         />
+                        <Label>Warranty Date</Label>
                         <Input
                           type="date"
                           placeholder="Warranty Date"
                           value={newEquipment.warranty_date || ''}
                           onChange={(e) => setNewEquipment({ ...newEquipment, warranty_date: e.target.value })}
                         />
+                        <Label>Origin</Label>
                         <Input
                           placeholder="Origin"
                           value={newEquipment.origin || ''}
                           onChange={(e) => setNewEquipment({ ...newEquipment, origin: e.target.value })}
                         />
+                        <Label>Last Check</Label>
                         <Input
                           type="date"
                           placeholder="Last Check"
                           value={newEquipment.last_check || ''}
                           onChange={(e) => setNewEquipment({ ...newEquipment, last_check: e.target.value })}
                         />
+                        <Label>Status</Label>
                         <Input
                           placeholder="Status"
                           value={newEquipment.status || ''}
@@ -154,6 +234,86 @@ const Equipment = () => {
                       </AlertDialogCancel>
                       <AlertDialogAction onClick={handleAdd}>
                         Add Equipment
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                <AlertDialog open={isEditDialogOpen}>
+                  <AlertDialogContent className="sm:max-w-[425px]">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Edit Equipment</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-2 items-center gap-4">
+                        <Label>Name</Label>
+                        <Input
+                          placeholder="Name"
+                          value={editEquipment.name || ''}
+                          onChange={(e) => setEditEquipment({ ...editEquipment, name: e.target.value })}
+                        />
+                        <Label>Room</Label>
+                        <Select
+                          value={editEquipment.room.toString() || ''}
+                          onValueChange={(value) => setEditEquipment({ ...editEquipment, room: parseInt(value) })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Room" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {rooms.map(room => (
+                              <SelectItem key={room.id} value={room.id.toString()}>{room.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Label>Quantity</Label>
+                        <Input
+                          type="number"
+                          placeholder="Quantity"
+                          value={editEquipment.quantity || ''}
+                          onChange={(e) => setEditEquipment({ ...editEquipment, quantity: parseInt(e.target.value) })}
+                        />
+                        <Label>Import Date</Label>
+                        <Input
+                          type="date"
+                          placeholder="Import Date"
+                          value={editEquipment.import_date || ''}
+                          onChange={(e) => setEditEquipment({ ...editEquipment, import_date: e.target.value })}
+                        />
+                        <Label>Warranty Date</Label>
+                        <Input
+                          type="date"
+                          placeholder="Warranty Date"
+                          value={editEquipment.warranty_date || ''}
+                          onChange={(e) => setEditEquipment({ ...editEquipment, warranty_date: e.target.value })}
+                        />
+                        <Label>Origin</Label>
+                        <Input
+                          placeholder="Origin"
+                          value={editEquipment.origin || ''}
+                          onChange={(e) => setEditEquipment({ ...editEquipment, origin: e.target.value })}
+                        />
+                        <Label>Last Check</Label>
+                        <Input
+                          type="date"
+                          placeholder="Last Check"
+                          value={editEquipment.last_check || ''}
+                          onChange={(e) => setEditEquipment({ ...editEquipment, last_check: e.target.value })}
+                        />
+                        <Label>Status</Label>
+                        <Input
+                          placeholder="Status"
+                          value={editEquipment.status || ''}
+                          onChange={(e) => setEditEquipment({ ...editEquipment, status: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel onClick={() => setIsEditDialogOpen(false)}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={handleEdit}>
+                        Edit Equipment
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -175,12 +335,12 @@ const Equipment = () => {
                     <TableRow key={item.id}>
                       <TableCell>{item.id}</TableCell>
                       <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.room}</TableCell>
+                      <TableCell>{getRoomName(item.room)}</TableCell>
                       <TableCell>{item.quantity}</TableCell>
                       <TableCell>{item.status}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Button variant="outline" size="icon" onClick={() => { }}>
+                          <Button variant="outline" size="icon" onClick={() => handleEditClick(item)}>
                             <FilePenIcon className="h-4 w-4" />
                           </Button>
                           <AlertDialog open={equipmentToDelete === item.id}>

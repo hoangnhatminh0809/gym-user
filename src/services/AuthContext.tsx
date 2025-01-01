@@ -25,7 +25,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
-        if (token) {
+        const storedUser = localStorage.getItem("user");
+
+        if (token && storedUser) {
+            setUser(JSON.parse(storedUser));
             setIsAuthenticated(true);
         }
     }, []);
@@ -37,7 +40,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             localStorage.setItem("access_token", access_token);
             localStorage.setItem("refresh_token", refresh_token);
-            
+            localStorage.setItem("user", JSON.stringify(user));
+
             setUser(user);
             setIsAuthenticated(true);
         } catch (error) {
@@ -47,11 +51,23 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        setUser(null);
-        setIsAuthenticated(false);
-        logout().catch((err) => console.error("Logout error", err));
+        logout()
+            .then(() => {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("refresh_token");
+                localStorage.removeItem("user");
+                setUser(null);
+                setIsAuthenticated(false);
+            })
+            .catch((err) => {
+                console.error("Logout error:", err.response?.data || err.message);
+                // Fallback: Clear local storage and state even if the request fails
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("refresh_token");
+                localStorage.removeItem("user");
+                setUser(null);
+                setIsAuthenticated(false);
+            });
     };
 
     return (

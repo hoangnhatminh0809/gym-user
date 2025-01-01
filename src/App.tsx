@@ -57,7 +57,7 @@ function App() {
           }
         />
         <Route
-          path="/analystics"
+          path="/analytics"
           element={
             <RequireAuth>
               <Analystic />

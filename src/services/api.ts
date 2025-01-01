@@ -16,7 +16,7 @@ interface TokenResponse {
 
 // Axios instance
 const api = axios.create({
-    baseURL: "https://gym-system-taupe.vercel.app",
+    baseURL: "http://127.0.0.1:8000",
     headers: {
         "Content-Type": "application/json",
     },
@@ -73,13 +73,36 @@ export const register = (data: {
     password: string;
 }) => api.post("/user/api/register/", data);
 
-export const login = (data: { username: string; password: string }) =>
-    api.post("/user/api/login/", data);
+// export const login = (data: { username: string; password: string }) =>
+//     api.post("/user/api/login/", data);
 
-export const refreshToken = (refreshToken: string) =>
-    api.post("/user/api/refresh-token/", { refresh_token: refreshToken });
+export const login = (data: { username: string; password: string }) => {
+    return api.post("/user/api/login/", data).then((response) => {
+        const { access_token, refresh_token, user }: TokenResponse = response.data;
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token);
+        localStorage.setItem("user", JSON.stringify(user));
+        return response;
+    });
+}
 
-export const logout = () => api.get("/user/api/logout/");
+export const refreshToken = (refreshToken: string) => {
+    return api.post("/user/api/refresh-token/", { refresh_token: refreshToken }).then((response) => {
+        const { access_token, refresh_token }: TokenResponse = response.data;
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token);
+        return response;
+    });
+}
+
+export const logout = () => {
+    return api.get("/user/api/logout/", {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+    });
+};
+
 
 export const createCheckoutSession = (amount: number) =>
     api.post("/user/api/create-checkout-session/", { amount });
