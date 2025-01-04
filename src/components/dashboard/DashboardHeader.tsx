@@ -23,7 +23,6 @@ interface DashboardHeaderProps {
   };
   notificationCount?: number;
 }
-
 const DashboardHeader = ({
   gymName = "Trung Hieu Gym",
   adminUser = {
@@ -49,16 +48,16 @@ const DashboardHeader = ({
       </div>
 
       <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="icon" className="relative">
+        {/* <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
           {notificationCount > 0 && (
             <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
               {notificationCount}
             </span>
           )}
-        </Button>
+        </Button> */}
 
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full">
               <Avatar>
@@ -88,7 +87,7 @@ const DashboardHeader = ({
               <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
     </header>
   );

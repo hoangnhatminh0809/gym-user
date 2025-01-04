@@ -1,10 +1,11 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
-import { login, refreshToken, logout } from "./api";
+import { login, refreshToken, logout, register } from "./api";
 
 interface AuthContextProps {
     user: any;
     login: (username: string, password: string) => Promise<void>;
     logout: () => void;
+    register: (data: RegisterData) => Promise<void>;
     isAuthenticated: boolean;
 }
 
@@ -12,10 +13,19 @@ interface AuthProviderProps {
     children: ReactNode;
 }
 
+interface RegisterData {
+    first_name: string;
+    last_name: string;
+    username: string;
+    email: string;
+    password: string;
+}
+
 const AuthContext = createContext<AuthContextProps>({
     user: null,
     login: async () => { },
     logout: () => { },
+    register: async () => { },
     isAuthenticated: false,
 });
 
@@ -50,6 +60,16 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     };
 
+    const handleRegister = async (data: RegisterData) => {
+        try {
+            await register(data);
+            await handleLogin(data.username, data.password);
+        } catch (error) {
+            console.error("Registration failed", error);
+            throw error;
+        }
+    };
+
     const handleLogout = () => {
         logout()
             .then(() => {
@@ -76,6 +96,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 user,
                 login: handleLogin,
                 logout: handleLogout,
+                register: handleRegister,
                 isAuthenticated,
             }}
         >

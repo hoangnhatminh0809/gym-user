@@ -28,34 +28,40 @@ interface SidebarProps {
 const defaultNavItems: NavItem[] = [
   {
     icon: <Users className="h-5 w-5" />,
-    label: "Members",
-    href: "/members",
+    label: "Feedbacks",
+    href: "/feedbacks",
     isActive: false,
   },
-  {
-    icon: <Dumbbell className="h-5 w-5" />,
-    label: "Equipment",
-    href: "/equipments",
-    isActive: false,
-  },
-  {
-    icon: <Box className="h-5 w-5" />,
-    label: "Room",
-    href: "/rooms",
-    isActive: false,
-  },
-  {
-    icon: <Calendar className="h-5 w-5" />,
-    label: "Training Package",
-    href: "/training-packages",
-    isActive: false,
-  },
-  {
-    icon: <BarChart3 className="h-5 w-5" />,
-    label: "Analytics",
-    href: "/analytics",
-    isActive: false,
-  },
+  // {
+  //   icon: <Users className="h-5 w-5" />,
+  //   label: "Members",
+  //   href: "/members",
+  //   isActive: false,
+  // },
+  // {
+  //   icon: <Dumbbell className="h-5 w-5" />,
+  //   label: "Equipment",
+  //   href: "/equipments",
+  //   isActive: false,
+  // },
+  // {
+  //   icon: <Box className="h-5 w-5" />,
+  //   label: "Room",
+  //   href: "/rooms",
+  //   isActive: false,
+  // },
+  // {
+  //   icon: <Calendar className="h-5 w-5" />,
+  //   label: "Training Package",
+  //   href: "/training-packages",
+  //   isActive: false,
+  // },
+  // {
+  //   icon: <BarChart3 className="h-5 w-5" />,
+  //   label: "Analytics",
+  //   href: "/analytics",
+  //   isActive: false,
+  // },
 ];
 
 const Sidebar = ({ items = defaultNavItems, className }: SidebarProps) => {

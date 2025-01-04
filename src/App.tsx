@@ -10,12 +10,15 @@ import Analystic from "./pages/analystic";
 import Login from "./pages/login";
 import { AuthProvider } from "./services/AuthContext";
 import RequireAuth from "./services/RequireAuth";
+import Feedbacks from "./pages/feedbacks";
+import Signup from "./pages/signup";
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route
           path="/"
           element={
@@ -25,6 +28,14 @@ function App() {
           }
         />
         <Route
+          path="/feedbacks"
+          element={
+            <RequireAuth>
+              <Feedbacks />
+            </RequireAuth>
+          }
+        />
+        {/* <Route
           path="/members"
           element={
             <RequireAuth>
@@ -64,7 +75,7 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/" />} /> */}
       </Routes>
     </AuthProvider>
   );

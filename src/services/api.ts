@@ -1,11 +1,12 @@
 import axios from "axios";
 
-interface User {
+export interface User {
     id: number;
     first_name: string;
     last_name: string;
     username: string;
     email: string;
+    balance: number;
 }
 
 interface TokenResponse {
